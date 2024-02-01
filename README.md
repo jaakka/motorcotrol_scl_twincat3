@@ -3,6 +3,9 @@
 Moottorin ohjauskoodi 3-vaiheiselle moottorille jossa rele1 ja rele2 ovat moottorin päinvastaiset kytkennät eli
 nämä eivät saa olla samaan aikaan päällä ja esim rele2 moottorille menee vaiheet eri järjestyksessä kuin rele1 , 3 eri toiminta tavalle. 
 
+### Variables.scl #### Aloitus muuttujat
+### Main.scl #### Aloitus muuttujat
+
 Testausten mukaan koodia suoritetaan 60 kertaa sekunnissa mutta en ole vielä testannut logiikalla
 että täsmääkö tämä aika joten sitä saattaa joutua nostamaan. 
 
