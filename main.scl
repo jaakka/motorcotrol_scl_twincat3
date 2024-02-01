@@ -1,1 +1,172 @@
+// Laskuri
+IF aika > 59 THEN
+	aika := 0; //Nollataan kun saadaan sekuntti täyteen
+	
+	IF laskuri > 0 THEN 		//Jos ajastimes on aika
+		laskuri := laskuri - 1; //vähennetään aikaa
+	END_IF
+ELSE
+	aika := aika + 1;	//Lisätään aikaa kunnes sekuntti täyttyy
+END_IF
 
+CASE toiminto_tila OF
+
+	1://Eka toimintatapa  
+	
+	//Moottori käynnistyy painonapista -S1 myötäpäivään (akselin pääSTä katsottuna),
+	//sammuu painonapista -S3, käynnistyy vastapäivään painonapista -S2.
+	//Suunnanvaihtojen välillä on oltava riittävä viive, että moottori ehtii pysähtyä.
+	
+		//Jos painiketta 1 painetaan (NO)
+		IF pai_kork = FALSE AND painike1 AND rele1 = FALSE AND laskuri = 0 THEN 
+			rele2 	:=	FALSE; //Lisävarmistus ettei toinen kytkentä ole aktiivinen
+			rele1 	:=	TRUE;  //Käynistetään moottori oikein päin
+			pai_kork:=	TRUE;  //estetään toistaminen
+		END_IF
+		
+		//Jos painiketta 2 painetaan (NO)	
+		IF pai_kork = FALSE AND painike2 AND rele1 = FALSE AND laskuri = 0 THEN 
+			rele1 	:=	FALSE; //Lisävarmistus ettei toinen kytkentä ole aktiivinen
+			rele2 	:=	TRUE;  //Käynistetään moottori väärin päin
+			pai_kork:=  TRUE;  //estetään toistaminen
+		END_IF
+	
+		//Jos painiketta 3 painetaan (NC)
+		IF pai_kork = FALSE AND painike3 = FALSE AND rele1 THEN 
+			rele1 := FALSE; 		  //Katkaistaan virta moottorilta
+			rele2 := FALSE; 		  //Katkaistaan virta vaiheiden kääntäjältä
+			laskuri := sammutusviive; //Asetetaan oletusviive moottorin odotukseen
+			pai_kork:=TRUE; 		  //estetään toistaminen
+		END_IF
+		
+	
+		
+	2://Toinen toimintatapa
+	
+	//Moottori käynnistyy painikkeesta -S1 myötäpäivään, käy 5 sekuntia, pysähtyy 3
+	//sekunniksi ja käy vastapäivään 4 sekuntia ja pysähtyy jälleen 3 sekunniksi.
+	//Työkierto jatkuu, kunnes painetaan stop-painiketta -S3.
+	
+		CASE kohta OF //Tehdään 2 tehtävän toiminnot vaiheittain
+			0:  //Kohta jossa ei tehdä muuta kuin odotetaan käynistysnappia
+				IF painike1 AND rele1 = FALSE AND laskuri = 0 THEN
+					kohta := 1; //ei tarvita korkeaa reunaa koska siirtyminen seuraavaan vaiheeseen
+				END_IF
+				
+			1:	//Eka vaihe, jossa laitetaan moottori päälle ja asetetaan ajastus
+				rele2 	:= FALSE; //Lisävarmistus vain..
+				rele1 	:= TRUE;  //moottori laitettu pyörimään oikein päin
+				laskuri := 5; 	  //asetetaan ajastimelle arvo
+				kohta 	:= 2; 	  //siirrytään odottamaan seuraavaan kohtaan
+				
+			2:  //Toka vaihe, odotetaan ajastinta ja sammutetaan moottori
+				IF laskuri = 0 THEN //Ajastin on hälyttänyt
+					rele1 := FALSE; //Sammutetaan moottori
+					kohta := 3;		//siirrytään seuraavaan kohtaan
+				END_IF
+				
+			3:	//Kolmas vaihe, asetetaan odotusaika tauolle
+				laskuri := 3; //Asetetaan laskuri
+				kohta 	:= 4; //siirrytään odottamaan
+				
+			4:	//Neljäs vaihe, odotetaan että tauko on ohi ja käynistetään myötäpäivään
+				IF laskuri = 0 THEN //Ajastin on hälyttänyt
+					rele2 := TRUE;  //Laitetaan moottori päälle vastapäivään
+					kohta := 5;     //siirrytään seuraavaan kohtaan
+				END_IF
+				
+			5:	//Viides vaihe, asetetaan ajastin odottamaan sammutusta
+				laskuri := 4;  //Asetetaan laskuri
+				kohta 	:= 6;  //siirrytään odottamaan
+				
+			6:	//Kuudes vaihe, odotetaan että sammutetaan
+				IF laskuri = 0 THEN //Ajastin on hälyttänyt
+					rele2 := FALSE; //Laitetaan moottori päälle vastapäivään
+					kohta := 7;		//siirrytään seuraavaan kohtaan
+				END_IF
+				
+			7:  //Seitsemäs vaihe asetetaan laskuri tauolle
+				laskuri := 3; 	//Asetetaan laskuri
+				kohta 	:= 8;   //siirrytään odottamaan
+				
+			8: //Viimeinen vaihe, odotetaan että voidaan aloittaa kierto alusta
+				IF laskuri = 0 THEN //Ajastin on hälyttänyt
+					kohta := 1;		//Aloitetaan työkierto alusta
+				END_IF
+				
+		END_CASE
+		
+		//Jos painiketta 3 painetaan (NC)
+		IF pai_kork = FALSE AND painike3 = FALSE AND rele1 THEN 
+			kohta 	 := 0; 				//tämä kannattaa laittaa ekana että ne ei kytke moottoreita takas päälle
+			rele1 	 := FALSE; 			//Katkaistaan virta moottorilta
+			rele2 	 := FALSE; 			//Katkaistaan virta vaiheiden kääntäjältä
+			laskuri  := sammutusviive;  //Asetetaan oletusviive moottorin odotukseen
+			pai_kork :=TRUE; 			//estetään toistaminen
+		END_IF
+		
+	
+	3://Kolmas toimintatapa
+	
+	//Moottori käynnistyy painikkeesta -S1 myötäpäivään ja vaihtaa suuntaa vastapäivään 
+	//induktiivisen anturin B1:n (PNP) tullessa vaikuttuneeksi. Induktiivisen anturin
+	//B2:n (PNP) tullessa vaikuttuneeksi, suunta vaihtuu myötäpäivään. Suunnanvaihtojen 
+	//välillä on oltava riittävä viive, että moottori ehtii pysähtyä. Pysäytys tapahtuu painikkeesta -S3.
+	
+		//Jos painiketta 1 painetaan (NO)
+		IF pai_kork = FALSE AND painike1 AND kohta = 0 AND laskuri = 0 THEN 
+			kohta 		:= 1;	  //Anturi valvonta aktivoituu
+			rele2 		:= FALSE; //Sammutetaan toinen rele varuuks
+			rele1 		:= TRUE;  //Käynistetöön moottori oikein päin
+			pai_kork	:= TRUE;  //estetään toistaminen
+		END_IF
+	
+		//Jos anturivalvonta on aktiivinen
+		IF kohta = 1 THEN
+			
+			//Tsiikataan mihin suuntaan vaihdetaan
+			IF anturi1 AND vaihtosuunta = FALSE THEN
+				vaihtosuunta := TRUE;  			//välimuisti
+				rele1 		 := FALSE; 			//sammutetaan rele
+				rele2 		 := FALSE; 			//sammutetaan rele
+				laskuri 	 := sammutusviive;	//asetetaan aika koska voidaan vaihtaa suunta
+			END_IF	
+			
+			//Tsiikataan vielkin mihin suuntaan vaihdetaan
+			IF anturi2 AND vaihtosuunta = TRUE THEN
+				vaihtosuunta := FALSE; 			//välimuisti
+				rele1 		 := FALSE; 			//sammutetaan rele
+				rele2 		 := FALSE; 			//sammutetaan rele
+				laskuri	   	 := sammutusviive;	//asetetaan aika koska voidaan vaihtaa suunta
+			END_IF	
+			
+			//Ajastimen odotus
+			IF laskuri = 0 THEN
+				IF vaihtosuunta = FALSE THEN
+					rele2	:= FALSE; //Lisäturva
+					rele1	:= TRUE;  //Moottori oikein päin päälle
+				ELSE
+					rele1	:= FALSE; //Lisäturva	
+					rele2	:= TRUE;  //Moottori väärin päin päälle
+				END_IF;
+			END_IF
+			
+		END_IF
+	
+		//Jos painiketta 3 painetaan (NC)
+		IF pai_kork = FALSE AND painike3 = FALSE AND rele1 THEN 
+			kohta 	:= 	0;				//Lopetetaan anturi valvonta
+			rele1 	:= 	FALSE; 			//Katkaistaan virta moottorilta
+			rele2 	:= 	FALSE; 			//Katkaistaan virta vaiheiden kääntäjältä
+			laskuri := 	sammutusviive;  //Asetetaan oletusviive moottorin odotukseen
+			pai_kork:=	TRUE; 			//estetään toistaminen
+		END_IF
+		
+END_CASE
+
+// Kaikki painikkeet vapautettu (NO,NO,NC)
+IF painike1 = FALSE AND painike2 = FALSE AND painike3 = TRUE THEN
+	pai_kork := FALSE;
+END_IF 
+
+//Coded by Jaakko Talvitie AUTE22SA 01.02.2024 01:04
