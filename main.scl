@@ -169,4 +169,4 @@ IF painike1 = FALSE AND painike2 = FALSE AND painike3 = TRUE THEN
 	pai_kork := FALSE;
 END_IF 
 
-//Coded by Jaakko Talvitie AUTE22SA 01.02.2024 01:04
+//Coded by Jaakko Talvitie 01.02.2024 01:04
