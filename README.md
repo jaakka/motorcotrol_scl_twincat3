@@ -6,9 +6,11 @@ Testausten mukaan koodia suoritetaan 60 kertaa sekunnissa mutta en ole vielä te
 että täsmääkö tämä aika joten sitä saattaa joutua nostamaan. 
 
 1. toiminta tapa
-   painike1 käynistää moottorin
-   painike2 käynistää moottorin toisinpäin
-   painike3 pysäyttää moottorin
-   moottorin ja ajastimen pitää olla pysähtynyt että voidaan painaa 1 tai 2
+   Painike1 käynistää moottorin.
+   Painike2 käynistää moottorin toisinpäin.
+   Painike3 pysäyttää moottorin.
+   Moottorin ja ajastimen pitää olla pysähtynyt että voidaan painaa 1 tai 2.
 
-   
+2. toiminta tapa
+   Painike1 aloittaa automaatti ajon joka toimii vaiheittain ja
+   tietyillä aikaväleillä. Painike3 pysäyttää automaattiajon.
