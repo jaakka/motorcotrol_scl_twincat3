@@ -1,0 +1,29 @@
+PROGRAM MAIN
+
+VAR
+	//Ei muutettavia muuttujia
+	test 		 : 	BOOL := FALSE;  // korkeareuna ohjelma kierrokselle
+	aika 		 : 	INT  := 0;      // ohjelma kierrosten laskuri
+	anturi1 	 : 	BOOL := FALSE;  // anturi 2
+	anturi2 	 : 	BOOL := FALSE;  // anturi 1
+	rele1 		 : 	BOOL := FALSE;  // rele QA4 joka ohjaa kontaktoria QA2
+	rele2 		 : 	BOOL := FALSE;  // rele QA3 joka ohjaa kontaktoria QA1
+	painike1 	 : 	BOOL := FALSE;  // S1 Painike
+	painike2 	 : 	BOOL := FALSE;  // S2 Painike
+	painike3 	 : 	BOOL := FALSE;  // S3 Painike
+	pai_kork 	 :  BOOL := FALSE;  // Painikkeiden yhteinen korkea reuna (Aiheuttaa sen että seuraavaa nappia ei voi painaa ennen kuin edellinen vapautettu)
+	vaihtosuunta : 	BOOL := FALSE;  // Väliaikainen muuttuja anturi suunnanvaihtoon
+	laskuri 	 : 	INT  := 0; 		// Ajastimen väliaikainen muuttuja
+	kohta 		 : 	INT  := 0;		// Väliaikainen ohjelmakohta tai anturiohjelman aktiivisuus
+	
+	//Ohjelmien aliakset, eli nimet
+	ManuaaliTila   : INT := 1;
+	AutomaattiTila : INT := 2;
+	AnturiTila     : INT := 3;
+	
+	//Säädettäviä asetuksia
+	toiminto_tila : INT := ManuaaliTila; //ManuaaliTila, AutomaattiTila , AnturiTila
+	sammutusviive : INT := 7; 			 // Moottorin sammutusviive (aika sekuntteina)
+END_VAR
+
+//Coded by Jaakko Talvitie 01.02.2024 01:04
